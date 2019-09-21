@@ -1,0 +1,11 @@
+domain.name:
+  daemon: 3600
+  protocol: cloudflare
+  use: web
+  web: ifconfig.me/ip
+  cache: /tmp/dd-update/domain.name.cache
+  server: api.cloudflare.com/client/v4
+  ssl: yes
+  login: email/username
+  password: password
+  zone: domain.name
