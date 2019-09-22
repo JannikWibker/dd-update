@@ -1,6 +1,7 @@
 import yaml
 import requests
 import argparse
+import api
 
 # >-- parsing command line arguments
 
@@ -23,9 +24,30 @@ if args.version:
 
 # >-- loading config file and handling default values
 
+try:
+  with open(args.config, "r") as config:
+    print("file found")
+
+except FileNotFoundError:
+  open(args.config, "w")
+  print("created empty config file dd-update.yml")
+  exit()
+
 f = open(args.config, "r")
 
+#if f.read() == "":
+#  print("config file is empty")
+#  exit()
+
 o = yaml.load(f, Loader=yaml.Loader)
+
+if o == None:
+  print("config error: no yml found")
+  exit()
+
+if "options" not in o:
+  print("config error: no options found")
+  exit()
 
 options = o["options"]
 
@@ -45,7 +67,7 @@ if 'verbose' not in s_options:
   options["verbose"] = False
 
 if 'cache' not in s_options:
-  optinos["cache"] = True
+  options["cache"] = True
 
 if args.verbose:
   options["verbose"] = args.verbose
@@ -59,8 +81,8 @@ if args.domain:
 if args.no_cache:
   options["cache"] = not(args.no_cache)
 
-print(args)
-print(options)
+#print(args)
+# print(options)
 
 # <-- loading config file and handling default values
 
@@ -98,6 +120,27 @@ def ip_lookup():
     print("not using web")
 
 # <-- ip lookup function
+
+# >-- cache function
+
+def check_cache(ip):
+  try:
+    with open(".dd-update.cache", "r") as cache_r:
+      prev_ip = cache_r.readline()
+      print("previous ip was" + prev_ip)
+      if prev_ip != ip:
+       cache_w = open(".dd-update.cache", "w")
+       cache_w.write(ip)
+       return False
+      else:
+        return True
+
+  except FileNotFoundError:
+   cache_w = open(".dd-update.cache", "w")
+   cache_w.write(ip)
+   return False
+  
+# <-- cache function
 
 # ip_lookup()
 
