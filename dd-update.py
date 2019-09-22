@@ -124,6 +124,8 @@ def ip_lookup():
 # >-- cache function
 
 def check_cache(ip):
+  if options["cache"] == False:
+    return True
   try:
     with open(".dd-update.cache", "r") as cache_r:
       prev_ip = cache_r.readline()
@@ -139,10 +141,34 @@ def check_cache(ip):
    cache_w = open(".dd-update.cache", "w")
    cache_w.write(ip)
    return False
-  
+
 # <-- cache function
 
-# ip_lookup()
+# >-- main logic
+
+# new_ip = ip_lookup()
+
+#if check_cache(new_ip):
+if True:
+  print('ip change detected, updating domains')
+  for key in domains:
+    print(key)
+    if domains[key]["protocol"] == 'cloudflare':
+      
+      if "zone_id" in set(domains[key]):
+        if "record_id" in set(domains[key]):
+          api.cloudflare.main("123.45.67.89", domains[key], domains[key]["zone_id"], domains[key]["record_id"])
+        else:
+          api.cloudflare.main("123.45.67.89", domains[key], domains[key]["zone_id"])
+      else:
+        api.cloudflare.main("123.45.67.89", domains[key])
+    else:
+      print('currently only cloudflare protocol is supported')
+else:
+  print('no ip change detected')
+  exit()
+
+# <-- main logic
 
 # for key in o:
 #   print(key)
