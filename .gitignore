@@ -1,2 +1,4 @@
 .DS_Store
 dd-update.yml
+.dd-update.cache
+logs/*
