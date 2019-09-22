@@ -1,9 +1,12 @@
+options:
+  use: web
+  web: https://ifconfig.me/ip
+  cache: true
+  verbose: false
+
 domain.name:
   daemon: 3600
   protocol: cloudflare
-  use: web
-  web: ifconfig.me/ip
-  cache: /tmp/dd-update/domain.name.cache
   server: api.cloudflare.com/client/v4
   ssl: yes
   login: email/username
