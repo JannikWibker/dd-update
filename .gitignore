@@ -2,3 +2,4 @@
 dd-update.yml
 .dd-update.cache
 logs/*
+**/__pycache__/
