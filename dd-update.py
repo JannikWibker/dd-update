@@ -92,6 +92,9 @@ else:
 if options["verbose"] and options["silent"]:
     options["silent"] = False
 
+if not(options["web"].startswith("https://")) and not(options["web"].startswith("http://")):
+   options["web"] = "https://" + options["web"]
+
 # <-- loading config file and handling default values
 
 # >-- filtering out which domains to update
@@ -108,6 +111,13 @@ else:
   domains = o
   del domains["options"]
 
+for key in domains:
+   if not(domains[key]["server"].startswith("https://")) and not(domains[key]["server"].startswith("http://")):
+    if not(domains[key]["ssl"]):
+      domains[key]["server"] = "http://" + domains[key]["server"]
+    else:
+      domains[key]["server"] = "https://" + domains[key]["server"]
+   
 if options["verbose"]:
   print("domains to update:")
   for domain_name in set(domains):
@@ -138,28 +148,30 @@ def check_cache(ip):
   if options["cache"] == False:
     return True
   try:
-    with open(".dd-update.cache", "r") as cache_r:
-      prev_ip = cache_r.readline()
+    with open(".dd-update-cache.yml", "r") as cache_r:
+      c = yaml.load(cache_r, Loader=yaml.Loader)
+      prev_ip = c["ip"]
       if options["verbose"]: 
         print("CACHE: previous ip was " + prev_ip)
         print("CACHE: new ip is       " + ip)
       if prev_ip != ip:
-       cache_w = open(".dd-update.cache", "w")
-       cache_w.write(ip)
+       cache_w = open(".dd-update-cache.yml", "w")
+       c["ip"] = ip
+       yaml.dump(c, cache_w, default_flow_style=False)
        return False
       else:
         return True
 
   except FileNotFoundError:
-   cache_w = open(".dd-update.cache", "w")
-   cache_w.write(ip)
+   cache_w = open(".dd-update-cache.yml", "w")
+   yaml.dump(dict(ip = ip), cache_w, default_flow_style=False)
    return False
 
 # <-- cache function
 
 # >-- main logic
 
-# new_ip = ip_lookup()
+#new_ip = ip_lookup()
 
 #if check_cache(new_ip):
 if True:
@@ -195,4 +207,4 @@ else:
 #   - [x] update the domain
 #
 # [ ] figure out how caching of "zone_id", "record_id" could work with cloudflare / cache
-# [ ] fix ssl property being ignored; protocol being required for all domains in the config file
+# [ ] fix ssl property being ignored; protocol being required for all domains in the config file22:29 (23.09)
