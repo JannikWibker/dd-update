@@ -1,8 +1,8 @@
-# dd-update
+# dd-update (WIP / Unfinished)
 
-dd-update is a replacement for ddclient which (at least for me) does not work reliably / at all. dd-update takes a similarly structured config file as ddclient does but instead of using `.ini` it uses yaml. Many properties are intentionally the same between ddclient and dd-update. At the moment the only protocol supported by dd-update is cloudflare (v4) but adding support is rather trivial.
+dd-update is a replacement for ddclient which (at least for me) does not work reliably / at all. dd-update takes a similarly structured config file as ddclient does but instead of using `.ini` yaml is used. Many properties are intentionally the same between ddclient and dd-update. At the moment the only protocol supported by dd-update is cloudflare (v4) but adding support for other protocols is rather trivial.
 
-dd-update relies on cronjobs to execute as it does not do scheduling on it's own (meaning that it does not have to deal with the same issues that ddclinet faces). Where ddclient would often not run at all cronjobs should do the job just fine.
+dd-update relies on cronjobs to execute as it does not do scheduling on it's own (meaning that it does not have to deal with the same issues that ddclinet faces / struggles with). Where ddclient would often not run at all or freeze cronjobs should do the job just fine.
 
 ### Configuration
 

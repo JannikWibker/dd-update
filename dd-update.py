@@ -183,16 +183,6 @@ else:
 
 # <-- main logic
 
-# requests:
-# request.get(url, headers=headers)
-# request.post(url, data=payload, headers=headers)
-
-# -> 
-# response object
-# - .status_code
-# - .headers
-# - .text
-
 # structure:
 # - [x] parsing command line arguments
 #   - [x] --verbose, --domain=<key>, --force, --no_cache, --daemon=<time>, --config=<file path>, --version, ...
@@ -205,6 +195,4 @@ else:
 #   - [x] update the domain
 #
 # [ ] figure out how caching of "zone_id", "record_id" could work with cloudflare / cache
-# [ ] 
-
-# figure out how daemon stuff will work and if it is even needed. Could also rely on cronjobs
+# [ ] fix ssl property being ignored; protocol being required for all domains in the config file
