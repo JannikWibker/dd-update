@@ -49,6 +49,8 @@ The following crontab configuration
 */30 * * * * python path/to/dd-update.py --config /etc/dd-update.yml --verbose 
 ```
 
+Can be used to automatically run dd-update every 30 minutes (with the config file being located in /etc/ and verbose logging enabled).
+
 This site can be used to quickly look up crontab configuration: https://crontab.guru
 
 ### Cloudflare protocol & setup
