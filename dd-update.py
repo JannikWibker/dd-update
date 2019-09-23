@@ -13,6 +13,7 @@ parser.add_argument('--no_cache',       action='store_true',                help
 parser.add_argument('--config', '-c',   metavar='<file path>',  type=str,   default='./dd-update.yml', help='specify the path to the configuration file')
 parser.add_argument('--daemon',         metavar='<seconds>',    type=int,   help='wether to run as a daemon or not; if yes then argument is timeout between updates')
 parser.add_argument('--version',        action='store_true',                help='print the current version')
+parser.add_argument('--silent', '-s',   action='store_true',                help='wether or not to disable ALL output, even if it is important')
 
 args = parser.parse_args()
 
@@ -24,29 +25,31 @@ if args.version:
 
 # >-- loading config file and handling default values
 
+# maybe open with read/write in order to not have to rewrite file every time; would have to implement custom create file code
+
 try:
   with open(args.config, "r") as config:
-    print("file found")
+    if(args.verbose):
+      if not args.silent: print("config file found")
 
 except FileNotFoundError:
   open(args.config, "w")
-  print("created empty config file dd-update.yml")
+  if not args.silent:
+    print("created empty config file " + args.config)
+    if args.config != "./dd-update.yml":
+      print("file path of created config file differs from default, the \"--config=" + args.config + "\" option is thereby required")
   exit()
 
 f = open(args.config, "r")
 
-#if f.read() == "":
-#  print("config file is empty")
-#  exit()
-
 o = yaml.load(f, Loader=yaml.Loader)
 
 if o == None:
-  print("config error: no yml found")
+  if not args.silent: print("config error: no yml found")
   exit()
 
 if "options" not in o:
-  print("config error: no options found")
+  if not args.silent: print("config error: no options found")
   exit()
 
 options = o["options"]
@@ -81,6 +84,14 @@ if args.domain:
 if args.no_cache:
   options["cache"] = not(args.no_cache)
 
+if args.silent:
+    options["silent"] = args.silent
+else:
+  options["silent"] = False
+
+if options["verbose"] and options["silent"]:
+    options["silent"] = False
+
 #print(args)
 # print(options)
 
@@ -94,13 +105,13 @@ if options["domain"] and options["domain"] != '':
   if o[options["domain"]]:
     domains[options["domain"]] = o[options["domain"]]
   else:
-    print('config error: could not update requested domain, not listed in config file')
+    if not options["silent"]: print('config error: could not update requested domain, not listed in config file')
     exit()
 else:
   domains = o
   del domains["options"]
 
-print(domains)
+if not options["verbose"]: print(domains)
 
 # <-- filtering out which domains to update
 
@@ -109,15 +120,15 @@ print(domains)
 def ip_lookup():
   if options["use"] == "web" and options["web"] != None:
     req = requests.get(options["web"])
-    print(req, req.text, req.status_code)
+    if options["verbose"]: print(req, req.text, req.status_code)
     if req.status_code != 200:
-      print("something went wrong")
+      if not options["silent"]: print("something went wrong")
       exit()
     else:
-      print("ip address is " + req.text)
+      if options["verbose"]: print("ip address is " + req.text)
       return req.text
   else:
-    print("not using web")
+    if not options["silent"]: print("not using web")
 
 # <-- ip lookup function
 
@@ -129,7 +140,7 @@ def check_cache(ip):
   try:
     with open(".dd-update.cache", "r") as cache_r:
       prev_ip = cache_r.readline()
-      print("previous ip was" + prev_ip)
+      if options["verbose"]: print("previous ip was" + prev_ip)
       if prev_ip != ip:
        cache_w = open(".dd-update.cache", "w")
        cache_w.write(ip)
@@ -150,35 +161,25 @@ def check_cache(ip):
 
 #if check_cache(new_ip):
 if True:
-  print('ip change detected, updating domains')
+  if options["verbose"]: print('ip change detected, updating domains')
   for key in domains:
     print(key)
     if domains[key]["protocol"] == 'cloudflare':
-      
+
       if "zone_id" in set(domains[key]):
         if "record_id" in set(domains[key]):
-          api.cloudflare.main("123.45.67.89", domains[key], domains[key]["zone_id"], domains[key]["record_id"])
+          api.cloudflare.main(options, "123.45.67.89", domains[key], domains[key]["zone_id"], domains[key]["record_id"])
         else:
-          api.cloudflare.main("123.45.67.89", domains[key], domains[key]["zone_id"])
+          api.cloudflare.main(options, "123.45.67.89", domains[key], domains[key]["zone_id"])
       else:
-        api.cloudflare.main("123.45.67.89", domains[key])
+        api.cloudflare.main(options, "123.45.67.89", domains[key])
     else:
-      print('currently only cloudflare protocol is supported')
+      if options["verbose"]: print('currently only cloudflare protocol is supported')
 else:
-  print('no ip change detected')
+  if options["verbose"]: print('no ip change detected')
   exit()
 
 # <-- main logic
-
-# for key in o:
-#   print(key)
-#   print(o[key])
-
-
-# url = 'https://...'
-# payload = open("request.json")
-# headers = {'content-type': 'application/json', 'Accept-Charset': 'UTF-8'}
-# r = requests.post(url, data=payload, headers=headers)
 
 # requests:
 # request.get(url, headers=headers)
@@ -195,10 +196,13 @@ else:
 #   - [x] --verbose, --domain=<key>, --force, --no_cache, --daemon=<time>, --config=<file path>, --version, ...
 # - [x] looking which domains should (/could) be updated (either all or the specified one)
 # - [x] get ip address using ip_lookup()
-# - if response differs from local cache update all relevant domains
-# - loop over all domains that need changing and:
-#   - figure out what protocol to use (only cloudflare is supported for now)
-#   - get the credentials / zone / server / ...
-#   - update the domain
+# - [x] if response differs from local cache update all relevant domains
+# - [x] loop over all domains that need changing and:
+#   - [x] figure out what protocol to use (only cloudflare is supported for now)
+#   - [x] get the credentials / zone / server / ...
+#   - [x] update the domain
+#
+# [ ] figure out how caching of "zone_id", "record_id" could work with cloudflare / cache
+# [ ] 
 
 # figure out how daemon stuff will work and if it is even needed. Could also rely on cronjobs
