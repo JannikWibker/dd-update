@@ -92,9 +92,6 @@ else:
 if options["verbose"] and options["silent"]:
     options["silent"] = False
 
-#print(args)
-# print(options)
-
 # <-- loading config file and handling default values
 
 # >-- filtering out which domains to update
@@ -111,7 +108,10 @@ else:
   domains = o
   del domains["options"]
 
-if not options["verbose"]: print(domains)
+if options["verbose"]:
+  print("domains to update:")
+  for domain_name in set(domains):
+    print(domain_name)
 
 # <-- filtering out which domains to update
 
@@ -120,15 +120,15 @@ if not options["verbose"]: print(domains)
 def ip_lookup():
   if options["use"] == "web" and options["web"] != None:
     req = requests.get(options["web"])
-    if options["verbose"]: print(req, req.text, req.status_code)
+    if options["verbose"]: 
+      print("LOOKUP: [" + req.status_code + "]: " + req.text)
     if req.status_code != 200:
-      if not options["silent"]: print("something went wrong")
+      if not options["silent"]: print("LOOKUP: something went wrong while looking up the new ip address")
       exit()
     else:
-      if options["verbose"]: print("ip address is " + req.text)
       return req.text
   else:
-    if not options["silent"]: print("not using web")
+    if options["verbose"]: print("LOOKUP: not using web; no-op; not implemented")
 
 # <-- ip lookup function
 
@@ -140,7 +140,9 @@ def check_cache(ip):
   try:
     with open(".dd-update.cache", "r") as cache_r:
       prev_ip = cache_r.readline()
-      if options["verbose"]: print("previous ip was" + prev_ip)
+      if options["verbose"]: 
+        print("CACHE: previous ip was " + prev_ip)
+        print("CACHE: new ip is       " + ip)
       if prev_ip != ip:
        cache_w = open(".dd-update.cache", "w")
        cache_w.write(ip)
@@ -161,7 +163,7 @@ def check_cache(ip):
 
 #if check_cache(new_ip):
 if True:
-  if options["verbose"]: print('ip change detected, updating domains')
+  if options["verbose"]: print('MAIN: ip change detected, updating domains')
   for key in domains:
     print(key)
     if domains[key]["protocol"] == 'cloudflare':
@@ -174,9 +176,9 @@ if True:
       else:
         api.cloudflare.main(options, "123.45.67.89", domains[key])
     else:
-      if options["verbose"]: print('currently only cloudflare protocol is supported')
+      if options["verbose"]: print('MAIN: currently only cloudflare protocol is supported')
 else:
-  if options["verbose"]: print('no ip change detected')
+  if options["verbose"]: print('MAIN: no ip change detected')
   exit()
 
 # <-- main logic
