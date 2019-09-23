@@ -5,10 +5,9 @@ options:
   verbose: false
 
 domain.name:
-  daemon: 3600
   protocol: cloudflare
   server: api.cloudflare.com/client/v4
-  ssl: yes
+  ssl: true
   login: email/username
-  password: password
+  password: password/token
   zone: domain.name

@@ -11,7 +11,7 @@ parser.add_argument('--domain', '-d',   metavar='<url>',        type=str,   help
 parser.add_argument('--force', '-f',    action='store_true',                help='force update; ignore cached value')
 parser.add_argument('--no_cache',       action='store_true',                help='if present don\'t write to cache')
 parser.add_argument('--config', '-c',   metavar='<file path>',  type=str,   default='./dd-update.yml', help='specify the path to the configuration file')
-parser.add_argument('--daemon',         metavar='<seconds>',    type=int,   help='wether to run as a daemon or not; if yes then argument is timeout between updates')
+#parser.add_argument('--daemon',         metavar='<seconds>',    type=int,   help='wether to run as a daemon or not; if yes then argument is timeout between updates')
 parser.add_argument('--version',        action='store_true',                help='print the current version')
 parser.add_argument('--silent', '-s',   action='store_true',                help='wether or not to disable ALL output, even if it is important')
 
