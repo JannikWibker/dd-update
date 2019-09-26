@@ -26,7 +26,7 @@ def get_zones(options, domain):
     print("UPDATE: something went wrong (get_zones)", json["errors"])
   if options["verbose"]: print("UPDATE: RESPONSE:", json)
 
-  return json["result"]["id"]
+  return json["result"][0]["id"]
 
 
 def get_records(options, domain, zone_id):
@@ -53,7 +53,7 @@ def get_records(options, domain, zone_id):
     print("UPDATE: something went wrong (get_records)", json["errors"])
   if options["verbose"]: print("UPDATE: RESPONSE:", json)
 
-  return json["result"]["id"]
+  return json["result"][0]["id"]
 
 
 def update_record(options, ip, domain, zone_id, record_id):
@@ -66,7 +66,7 @@ def update_record(options, ip, domain, zone_id, record_id):
 
   response = requests.put(
     url,
-    data = { 'type': 'A', 'name': domain["zone"], 'content': ip }, 
+    json = { 'type': 'A', 'name': domain["zone"], 'content': ip }, 
     headers = { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' }
   )
 

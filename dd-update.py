@@ -131,7 +131,7 @@ def ip_lookup():
   if options["use"] == "web" and options["web"] != None:
     req = requests.get(options["web"])
     if options["verbose"]: 
-      print("LOOKUP: [" + req.status_code + "]: " + req.text)
+      print("LOOKUP: [" + str(req.status_code) + "]: " + req.text)
     if req.status_code != 200:
       if not options["silent"]: print("LOOKUP: something went wrong while looking up the new ip address")
       exit()
@@ -158,9 +158,9 @@ def check_cache(ip):
        cache_w = open(".dd-update-cache.yml", "w")
        c["ip"] = ip
        yaml.dump(c, cache_w, default_flow_style=False)
-       return False
+       return True
       else:
-        return True
+        return False
 
   except FileNotFoundError:
    cache_w = open(".dd-update-cache.yml", "w")
@@ -171,9 +171,9 @@ def check_cache(ip):
 
 # >-- main logic
 
-#new_ip = ip_lookup()
+new_ip = ip_lookup()
 
-#if check_cache(new_ip):
+if check_cache(new_ip):
 if True:
   if options["verbose"]: print('MAIN: ip change detected, updating domains')
   for key in domains:
@@ -182,11 +182,11 @@ if True:
 
       if "zone_id" in set(domains[key]):
         if "record_id" in set(domains[key]):
-          api.cloudflare.main(options, "123.45.67.89", domains[key], domains[key]["zone_id"], domains[key]["record_id"])
+          api.cloudflare.main(options, new_ip, domains[key], domains[key]["zone_id"], domains[key]["record_id"])
         else:
-          api.cloudflare.main(options, "123.45.67.89", domains[key], domains[key]["zone_id"])
+          api.cloudflare.main(options, new_ip, domains[key], domains[key]["zone_id"])
       else:
-        api.cloudflare.main(options, "123.45.67.89", domains[key])
+        api.cloudflare.main(options, new_ip, domains[key])
     else:
       if options["verbose"]: print('MAIN: currently only cloudflare protocol is supported')
 else:
@@ -207,4 +207,6 @@ else:
 #   - [x] update the domain
 #
 # [ ] figure out how caching of "zone_id", "record_id" could work with cloudflare / cache
-# [ ] fix ssl property being ignored; protocol being required for all domains in the config file22:29 (23.09)
+# [ ] figure out if the config file location is good, shouldn't it maybe be inside of /etc/ by default; 
+#     where should dd-update be located after installing? just it's own directory or somewhere else? 
+#     if somewhere else consider using /etc/ for the config file
