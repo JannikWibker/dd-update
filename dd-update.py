@@ -174,7 +174,6 @@ def check_cache(ip):
 new_ip = ip_lookup()
 
 if check_cache(new_ip):
-if True:
   if options["verbose"]: print('MAIN: ip change detected, updating domains')
   for key in domains:
     print(key)
