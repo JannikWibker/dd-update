@@ -66,7 +66,7 @@ def update_record(options, ip, domain, zone_id, record_id):
 
   response = requests.put(
     url,
-    json = { 'type': 'A', 'name': domain["zone"], 'content': ip }, 
+    json = { 'type': 'A', 'name': domain["zone"], 'content': ip, 'proxied': True }, 
     headers = { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' }
   )
 
