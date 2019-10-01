@@ -1,4 +1,5 @@
-import requests
+# import requests
+from .curl import get, put
 
 # if not options["silent"]:
 
@@ -10,10 +11,7 @@ def get_zones(options, domain):
     print("UPDATE: connecting to " + url)
     print("UPDATE: using credentials \"Bearer " + domain["password"] + "\"")
   
-  response = requests.get(
-    url,
-    headers = { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' }
-  )
+  response = get(url, { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' })
 
   if response.status_code != 200:
     if options["verbose"]:
@@ -37,10 +35,7 @@ def get_records(options, domain, zone_id):
     print("UPDATE: connecting to " + url)
     print("UPDATE: using credentials \"Bearer " + domain["password"] + "\"")
 
-  response = requests.get(
-    url,
-    headers = { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' }
-  )
+  response = get(url, { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' })
 
   if response.status_code != 200:
     if options["verbose"]:
@@ -64,10 +59,10 @@ def update_record(options, ip, domain, zone_id, record_id):
     print("UPDATE: connecting to " + url)
     print("UPDATE: using credentials \"Bearer " + domain["password"] + "\"")
 
-  response = requests.put(
+  response = put(
     url,
-    json = { 'type': 'A', 'name': domain["zone"], 'content': ip, 'proxied': True }, 
-    headers = { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' }
+    { 'Authorization': 'Bearer ' + domain["password"], 'Content-Type': 'application/json' },
+    { 'type': 'A', 'name': domain["zone"], 'content': ip, 'proxied': True }
   )
 
   if response.status_code != 200:

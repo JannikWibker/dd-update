@@ -1,2 +1,3 @@
 from .cloudflare import main
-__all__ = [ "cloudflare" ]
+from .curl import get, post, patch, put, delete
+__all__ = [ "cloudflare", "curl" ]
