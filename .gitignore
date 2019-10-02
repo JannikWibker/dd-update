@@ -1,6 +1,6 @@
 .DS_Store
 dd-update.yml
-.dd-update.cache
+.dd-update.cache.yml
 logs/*
 **/__pycache__/
 mock/

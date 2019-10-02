@@ -87,7 +87,8 @@ def update_record(options, ip, domain, zone_id, record_id):
       print("UPDATE: something went wrong (update_record)", json["errors"])
   if options["verbose"]: print("UPDATE: RESPONSE:", json)
 
-  return json["result"]
+  # return json["result"]
+  return json
 
 def main(options, ip, domain, zone_id=None, record_id=None):
 
@@ -121,6 +122,13 @@ def main(options, ip, domain, zone_id=None, record_id=None):
     if options["cache"]:
       write_cache('.dd-update.cache.yml', cache)
 
-  update_record(options, ip, domain, zone_id, record_id)
+  res = update_record(options, ip, domain, zone_id, record_id)
+
+  if res["success"] == True:
+    if options["verbose"]:
+      print('UPDATED {} SUCCESSFULLY'.format(domain["zone"]))
+  else:
+    if options["verbose"]:
+      print('UPDATING OF {} FAILED'.format(domain["zone"]))
 
 __all__ = main

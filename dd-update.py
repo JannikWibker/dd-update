@@ -77,6 +77,8 @@ if args.verbose:
 
 if args.force:
   options["force"] = args.force
+else:
+  options["force"] = False
 
 if args.domain:
   options["domain"] = args.domain
