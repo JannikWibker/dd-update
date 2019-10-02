@@ -145,17 +145,17 @@ def ip_lookup():
 # >-- cache function
 
 def check_cache(ip):
-  if options["cache"] == False:
+  if options["force"] == True:
     return True
   try:
-    with open(".dd-update-cache.yml", "r") as cache_r:
+    with open(".dd-update.cache.yml", "r") as cache_r:
       c = yaml.load(cache_r, Loader=yaml.Loader)
       prev_ip = c["ip"]
       if options["verbose"]: 
         print("CACHE: previous ip was " + prev_ip)
         print("CACHE: new ip is       " + ip)
       if prev_ip != ip:
-       cache_w = open(".dd-update-cache.yml", "w")
+       cache_w = open(".dd-update.cache.yml", "w")
        c["ip"] = ip
        yaml.dump(c, cache_w, default_flow_style=False)
        return True
@@ -163,9 +163,11 @@ def check_cache(ip):
         return False
 
   except FileNotFoundError:
-   cache_w = open(".dd-update-cache.yml", "w")
-   yaml.dump(dict(ip = ip), cache_w, default_flow_style=False)
-   return False
+    if options["cache"]:
+      cache_w = open(".dd-update.cache.yml", "w")
+      yaml.dump(dict(ip = ip), cache_w, default_flow_style=False)
+
+    return True
 
 # <-- cache function
 

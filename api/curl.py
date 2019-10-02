@@ -19,7 +19,7 @@ def request(method, url, headers={}, payload=None):
   else:
     result = subprocess.check_output(['curl', '-X', method, '-s', '-w', '\n%{content_type}\n%{response_code}', url, *header_list]).decode('utf-8')
 
-  print(result)
+  # print(result)
 
   lines = result.splitlines()
   content_type = lines[-2]
